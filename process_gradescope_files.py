@@ -2,11 +2,17 @@
 
 from os import system
 import csv
+import sys
 
 
 class CompareHandins:
-    lab_names = {0: "Lab0", 1: "Lab_1_Functions_Code", 2: "Lab2", 3: "Lab_3_Dictionaries_PDF_and_code", 4:"Lab4", 5:"Lab5", 6:"Lab6", 7:"Lab7", 8:"Lab8"}
+    lab_names = {0: "Lab0", 1: "Lab_1_Functions", 2: "Lab_2_Filter_PDF_and",
+                 3: "Lab3", 4: "Lab4", 5: "Lab5", 6: "Lab6", 7:"Lab7", 8:"Lab8"}
     hwk_names = {1: "Homework_1_Data_analysis_PDF_and_code"}
+class CompareHandins:
+    lab_names = {0: "Lab0", 1: "Lab_1_Functions", 2: "Lab_2_Filter_PDF_and",
+                 3: "Lab3", 4: "Lab4", 5: "Lab5", 6: "Lab6", 7:"Lab7", 8:"Lab8"}
+    hwk_names = {0: "Homework1"}
     base_name = "Data"
 
     def __init__(self, term=""):
@@ -19,7 +25,8 @@ class CompareHandins:
         return CompareHandins.base_name + "/" + self.term_name + "/"
 
     def build_lab_folder_name(self, lab=1):
-        """Directory for student submisions"""
+        """Directory for student submisions
+        :Param lab which lab to do"""
         return self.build_dir_name() + "Lab" + str(lab) + "/"
 
     def build_roster(self):
@@ -40,6 +47,7 @@ class CompareHandins:
     def mv_submission_names(self, lab=-1, hwk=-1, print_only=True):
         """Process the csv file wiTrueth the submissions to get matching names/folders"""
         try:
+            fname = self.build_dir_name() + "Lab" + str(lab) + "/" + CompareHandins.lab_names[lab] + "_Code__scores.csv"
             fname = self.build_dir_name() + "Lab" + str(lab) + "/" + CompareHandins.lab_names[lab] + "__scores.csv"
             folder_name = self.build_dir_name() + "Lab" + str(lab) + "/"
         except KeyError:
@@ -91,3 +99,17 @@ if __name__ == '__main__':
 
     class_one.mv_submission_names(hwk=1, print_only=False)
     class_two.mv_submission_names(hwk=1, print_only=False)
+
+    if len(sys.argv) < 3:
+        print("Usage: Term [string] lab/hwk number")
+        exit(1)
+
+    print("Term {0} lab/hwk {1} number {2}".format(sys.argv[1], sys.argv[2], sys.argv[3]))
+    class_one = CompareHandins(sys.argv[1])
+
+    if sys.argv[2] == "lab":
+        class_one.mv_submission_names(lab=int(sys.argv[3]), print_only=False)
+    else:
+        class_one.mv_submission_names(hwk=int(sys.argv[3]), print_only=False)
+
+    print("perl moss.perl -l python -d {0}/Lab{1}/*/*.py".format(sys.argv[1], int(sys.argv[3])))
