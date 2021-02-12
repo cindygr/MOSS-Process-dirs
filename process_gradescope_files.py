@@ -2,11 +2,13 @@
 
 from os import system
 import csv
+import sys
 
 
-class Compare_handins:
-    lab_names = {0:"Lab0", 1:"Lab_1_Functions", 2:"Lab2", 3:"Lab3", 4:"Lab4", 5:"Lab5", 6:"Lab6", 7:"Lab7", 8:"Lab8"}
-    hwk_names = {0:"Homework1"}
+class CompareHandins:
+    lab_names = {0: "Lab0", 1: "Lab_1_Functions", 2: "Lab_2_Filter_PDF_and",
+                 3: "Lab3", 4: "Lab4", 5: "Lab5", 6: "Lab6", 7:"Lab7", 8:"Lab8"}
+    hwk_names = {0: "Homework1"}
     base_name = "Data"
 
     def __init__(self, term=""):
@@ -16,10 +18,11 @@ class Compare_handins:
 
     def build_dir_name(self):
         """Directory everything for this term is in"""
-        return Compare_handins.base_name + "/" + self.term_name + "/"
+        return CompareHandins.base_name + "/" + self.term_name + "/"
 
     def build_lab_folder_name(self, lab=1):
-        """Directory for student submisions"""
+        """Directory for student submisions
+        :Param lab which lab to do"""
         return self.build_dir_name() + "Lab" + str(lab) + "/"
 
     def build_roster(self):
@@ -37,10 +40,10 @@ class Compare_handins:
     def mv_submission_names(self, lab=1, hwk=-1, print_only=True):
         """Process the csv file with the submissions to get matching names/folders"""
         try:
-            fname = self.build_dir_name() + "Lab" + str(lab) + "/" + Compare_handins.lab_names[lab] + "_Code__scores.csv"
+            fname = self.build_dir_name() + "Lab" + str(lab) + "/" + CompareHandins.lab_names[lab] + "_Code__scores.csv"
             folder_name = self.build_dir_name() + "Lab" + str(lab) + "/"
         except IndexError:
-            fname = self.build_dir_name() + "Hwk" + str(hwk) + "/" + Compare_handins.hwk_names[lab] + "_Code__scores.csv"
+            fname = self.build_dir_name() + "Hwk" + str(hwk) + "/" + CompareHandins.hwk_names[lab] + "_Code__scores.csv"
             folder_name = self.build_dir_name() + "Hwk" + str(hwk) + "/"
 
         all_students = []
@@ -80,8 +83,20 @@ if __name__ == '__main__':
     Now you can run Moss
         cd Data/
         perl moss.perl -l python -d term/Lab?/*/*.py"""
-    class_one = Compare_handins("Spring_2020")
-    class_two = Compare_handins("Winter_2021")
 
-    class_one.mv_submission_names(lab=1, print_only=False)
-    class_two.mv_submission_names(lab=1, print_only=False)
+    if len(sys.argv) < 3:
+        print("Usage: Term [string] lab/hwk number")
+        class_one = CompareHandins("Winter_2021")
+
+        class_one.mv_submission_names(lab=1, print_only=False)
+        exit(1)
+
+    print("Term {0} lab/hwk {1} number {2}".format(sys.argv[1], sys.argv[2], sys.argv[3]))
+    class_one = CompareHandins(sys.argv[1])
+
+    if sys.argv[2] == "lab":
+        class_one.mv_submission_names(lab=int(sys.argv[3]), print_only=False)
+    else:
+        class_one.mv_submission_names(hwk=int(sys.argv[3]), print_only=False)
+
+    print("perl moss.perl -l python -d {0}/Lab{1}/*/*.py".format(sys.argv[1], int(sys.argv[3])))
